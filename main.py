@@ -22,7 +22,7 @@ app.add_middleware(
 )
 
 # include API routers
-app.include_router(llm_api.router, prefix="/api")
+app.include_router(llm_api.router)
 
 
 

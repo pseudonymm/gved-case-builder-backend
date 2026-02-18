@@ -1,14 +1,20 @@
 from fastapi import APIRouter
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from services.llm import fill_in_service
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/llm",
+    tags=["LLM"]
+)
 
 class FillInRequest(BaseModel):
     context: str
     type: str
 
-# TODO: make this http streaming response so that the frontend can show suggestions as they come in instead of waiting for the entire response to be generated
-@router.post("/fill-in", response_model=list[str])
+@router.post("/fill-in")
 async def fill_in(req: FillInRequest):
-    return await fill_in_service(req.context, req.type)
+    return StreamingResponse(
+        fill_in_service(req.context, req.type),
+        media_type="text/plain"
+    )
